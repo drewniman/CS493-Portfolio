@@ -1,6 +1,8 @@
 from flask import Flask
+import team
 
 app = Flask(__name__)
+app.register_blueprint(team.bp)
 
 @app.route('/')
 def index():

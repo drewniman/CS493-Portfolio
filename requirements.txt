@@ -1,2 +1,5 @@
 Flask==3.0.0
 google-cloud-datastore==2.15.1
+python-dotenv==1.0.0
+authlib==1.2.1
+requests==2.31.0

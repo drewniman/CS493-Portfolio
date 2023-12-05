@@ -4,16 +4,21 @@ from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask, redirect, render_template, session, url_for
+from flask import Flask, redirect, render_template, session, url_for, jsonify
 
 from google.cloud import datastore
 import constants
+import team
+
+from auth import AuthError
+from error import credentials_401
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
 app = Flask(__name__)
+app.register_blueprint(team.bp)
 app.secret_key = env.get("APP_SECRET_KEY")
 
 client = datastore.Client()
@@ -89,18 +94,6 @@ def add_user_to_db(sub):
     user.update({ "sub": sub })
     client.put(user)
     return user.key.id
-
-# def get_user_id_by_sub(sub):
-#     '''
-#     Returns the unique id in Datastore associated with
-#     the User specified by sub
-#     '''
-#     query = client.query(kind=constants.users)
-#     query.add_filter("sub", "=", sub)
-#     results = list(query.fetch())
-#     if len(results) != 1:
-#         return False
-    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=env.get("PORT", 3000))

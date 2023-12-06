@@ -5,6 +5,7 @@ client = datastore.Client()
 
 required_props = ["name", "location", "coach", "championships"]
 optional_props = ["mascot"]
+patchable_props = required_props + optional_props
 
 def create_team(request, user_id):
     '''
@@ -48,9 +49,6 @@ def view_team_by_id(request, team_id):
     team = client.get(key=team_key)
     if not team:
         return False
-    # for prop in optional_props:
-    #     if prop not in team:
-    #         team[prop] = None
     team["id"] = team.key.id
     team["self"] = request.base_url
     team["players"] = get_players_on_team(team_id, request)
@@ -94,3 +92,22 @@ def get_teams_by_user_id(user_id, request):
             counts.append(aggregation.value)
     output["total"] = counts[0]
     return output
+
+def patch_team_by_id(team_id, request):
+    '''
+    Update the team props in datastore
+    Return updated team on success
+    '''
+    content = request.get_json()
+    team_key = client.key(constants.teams, int(team_id))
+    team = client.get(key=team_key)
+    if not team:
+        return False
+    for prop in content:
+        if prop in patchable_props:
+            team[prop] = content[prop]
+    client.put(team)
+    team["id"] = team.key.id
+    team["players"] = get_players_on_team(team, request)
+    team["self"] = request.base_url
+    return team

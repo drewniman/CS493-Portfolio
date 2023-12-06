@@ -34,19 +34,26 @@ def team_post_view_all():
         teams = get_teams_by_user_id(user_id, request)
         return teams, 200
 
-@bp.route('/<team_id>', methods=['GET'])
+@bp.route('/<team_id>', methods=['GET', 'PATCH'])
 def team_view_put_patch_delete(team_id):
+    payload = verify_jwt(request)
+    if isinstance(payload, AuthError):
+        return error.unauthorized
+    elif not validate.accept_header(request):
+        return error.accept_header
+    team = view_team_by_id(request, team_id)
+    user_id = get_user_id_by_sub(payload["sub"])
+    if not team:
+        return error.team_not_found
+    if user_id != team["owner"]:
+        return error.forbidden
+    
     if request.method == 'GET':
         # View a Team
-        payload = verify_jwt(request)
-        if isinstance(payload, AuthError):
-            return error.unauthorized
-        elif not validate.accept_header(request):
-            return error.accept_header
-        team = view_team_by_id(request, team_id)
-        user_id = get_user_id_by_sub(payload["sub"])
-        if not team:
-            return error.team_not_found
-        if user_id != team["owner"]:
-            return error.forbidden
         return team, 200
+    if request.method == 'PATCH':
+        # Patch a Team
+        patched_team = patch_team_by_id(team_id, request)
+        if not patched_team:
+            return error.team_not_found
+        return patched_team, 200

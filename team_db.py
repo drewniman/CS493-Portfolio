@@ -101,10 +101,29 @@ def patch_team_by_id(team_id, request):
     content = request.get_json()
     team_key = client.key(constants.teams, int(team_id))
     team = client.get(key=team_key)
-    if not team:
-        return False
     for prop in content:
         if prop in patchable_props:
+            team[prop] = content[prop]
+    client.put(team)
+    team["id"] = team.key.id
+    team["players"] = get_players_on_team(team, request)
+    team["self"] = request.base_url
+    return team
+
+def put_team_by_id(team_id, request):
+    '''
+    Replace all required team props in datastore
+    Return updated team on success
+    '''
+    content = request.get_json()
+    team_key = client.key(constants.teams, int(team_id))
+    team = client.get(key=team_key)
+    for prop in required_props:
+        team[prop] = content[prop]
+    for prop in optional_props:
+        if not prop in content:
+            team[prop] = None
+        else:
             team[prop] = content[prop]
     client.put(team)
     team["id"] = team.key.id

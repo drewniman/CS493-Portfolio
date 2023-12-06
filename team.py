@@ -25,16 +25,15 @@ def team_post_view_all():
         # Create a Team
         if not validate.team_request_body(request):
             return error.bad_request
-        else:
-            user_id = get_user_id_by_sub(payload["sub"])
-            return create_team(request, user_id)
+        user_id = get_user_id_by_sub(payload["sub"])
+        return create_team(request, user_id)
     if request.method == 'GET':
         # View all Teams
         user_id = get_user_id_by_sub(payload["sub"])
         teams = get_teams_by_user_id(user_id, request)
         return teams, 200
 
-@bp.route('/<team_id>', methods=['GET', 'PATCH'])
+@bp.route('/<team_id>', methods=['GET', 'PATCH', 'PUT'])
 def team_view_put_patch_delete(team_id):
     payload = verify_jwt(request)
     if isinstance(payload, AuthError):
@@ -54,6 +53,10 @@ def team_view_put_patch_delete(team_id):
     if request.method == 'PATCH':
         # Patch a Team
         patched_team = patch_team_by_id(team_id, request)
-        if not patched_team:
-            return error.team_not_found
         return patched_team, 200
+    if request.method == 'PUT':
+        # Put a Team
+        if not validate.team_request_body(request):
+            return error.bad_request
+        put_team = put_team_by_id(team_id, request)
+        return put_team, 200

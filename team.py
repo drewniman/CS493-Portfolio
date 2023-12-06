@@ -33,7 +33,7 @@ def team_post_view_all():
         teams = get_teams_by_user_id(user_id, request)
         return teams, 200
 
-@bp.route('/<team_id>', methods=['GET', 'PATCH', 'PUT'])
+@bp.route('/<team_id>', methods=['GET', 'PATCH', 'PUT', 'DELETE'])
 def team_view_put_patch_delete(team_id):
     payload = verify_jwt(request)
     if isinstance(payload, AuthError):
@@ -60,3 +60,7 @@ def team_view_put_patch_delete(team_id):
             return error.bad_request
         put_team = put_team_by_id(team_id, request)
         return put_team, 200
+    if request.method == 'DELETE':
+        # Delete a Team
+        delete_team_by_id(team_id)
+        return '', 204

@@ -130,3 +130,20 @@ def put_team_by_id(team_id, request):
     team["players"] = get_players_on_team(team, request)
     team["self"] = request.base_url
     return team
+
+def remove_players_from_team_by_id(team_id):
+    '''
+    TODO
+    On team deletion, update all associated
+    players "team" field to null
+    Return number of players updated
+    '''
+    return 0
+
+def delete_team_by_id(team_id):
+    '''
+    Delete the specified team from datastore
+    '''
+    num_players = remove_players_from_team_by_id(team_id)
+    team_key = client.key(constants.teams, int(team_id))
+    client.delete(team_key)

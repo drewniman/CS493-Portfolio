@@ -10,9 +10,6 @@ from google.cloud import datastore
 import constants
 import team
 
-from auth import AuthError
-from error import credentials_401
-
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
@@ -96,4 +93,4 @@ def add_user_to_db(sub):
     return user.key.id
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=env.get("PORT", 3000))
+    app.run(host="127.0.0.1", port=env.get("PORT", 3000))

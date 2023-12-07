@@ -10,6 +10,7 @@ from google.cloud import datastore
 import constants
 import team
 import player
+import user
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -18,6 +19,7 @@ if ENV_FILE:
 app = Flask(__name__)
 app.register_blueprint(team.bp)
 app.register_blueprint(player.bp)
+app.register_blueprint(user.bp)
 app.secret_key = env.get("APP_SECRET_KEY")
 
 client = datastore.Client()

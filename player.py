@@ -34,7 +34,7 @@ def player_post_view_all():
         players = get_players_by_user_id(user_id, request)
         return players, 200
 
-@bp.route('/<player_id>', methods=['GET', 'PATCH', 'PUT'])
+@bp.route('/<player_id>', methods=['GET', 'PATCH', 'PUT', 'DELETE'])
 def player_view_put_patch_delete(player_id):
     payload = verify_jwt(request)
     if isinstance(payload, AuthError):
@@ -61,3 +61,7 @@ def player_view_put_patch_delete(player_id):
             return error.bad_request
         put_player = put_player_by_id(player_id, request)
         return put_player, 200
+    if request.method == 'DELETE':
+        # Delete a Player
+        delete_player_by_id(player_id)
+        return '', 204

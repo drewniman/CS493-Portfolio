@@ -107,3 +107,10 @@ def put_player_by_id(player_id, request):
     player["id"] = player.key.id
     player["self"] = request.base_url
     return player
+
+def delete_player_by_id(player_id):
+    '''
+    Delete the specified player from datastore
+    '''
+    player_key = client.key(constants.players, int(player_id))
+    client.delete(player_key)

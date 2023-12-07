@@ -54,13 +54,36 @@ def view_team_by_id(request, team_id):
     team["players"] = get_players_on_team(team_id, request)
     return team
 
+def view_trunc_team_by_id(team_id, request):
+    '''
+    Return the team's id, name, and self link
+    '''
+    team_key = client.key(constants.teams, int(team_id))
+    team = client.get(key=team_key)
+    if not team:
+        return None
+    return {
+        "id": team_id,
+        "name": team["name"],
+        "self": request.root_url + 'teams/' + str(team_id)
+    }
+
 def get_players_on_team(team_id, request):
     '''
-    TODO
     Return a list of players on the team's roster
-    Only includes id and self link
+    Only includes id, name, and self link
     '''
-    return []
+    query = client.query(kind=constants.players)
+    query.add_filter("team", "=", int(team_id))
+    results = list(query.fetch())
+    players = []
+    for player in results:
+        players.append({
+            "id": player.key.id,
+            "name": player["name"],
+            "self": request.root_url + 'players/' + str(player.key.id)
+        })
+    return players
 
 def get_teams_by_user_id(user_id, request):
     '''
@@ -106,7 +129,7 @@ def patch_team_by_id(team_id, request):
             team[prop] = content[prop]
     client.put(team)
     team["id"] = team.key.id
-    team["players"] = get_players_on_team(team, request)
+    team["players"] = get_players_on_team(team_id, request)
     team["self"] = request.base_url
     return team
 
@@ -127,7 +150,7 @@ def put_team_by_id(team_id, request):
             team[prop] = content[prop]
     client.put(team)
     team["id"] = team.key.id
-    team["players"] = get_players_on_team(team, request)
+    team["players"] = get_players_on_team(team_id, request)
     team["self"] = request.base_url
     return team
 
@@ -147,3 +170,12 @@ def delete_team_by_id(team_id):
     num_players = remove_players_from_team_by_id(team_id)
     team_key = client.key(constants.teams, int(team_id))
     client.delete(team_key)
+
+def assign_player_to_team(team_id, player_id):
+    '''
+    Set the specified player's "team" field to team_id
+    '''
+    player_key = client.key(constants.players, int(player_id))
+    player = client.get(key=player_key)
+    player["team"] = int(team_id)
+    client.put(player)

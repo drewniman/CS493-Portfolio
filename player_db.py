@@ -1,5 +1,6 @@
 from google.cloud import datastore
 import constants
+from team_db import view_trunc_team_by_id
 
 client = datastore.Client()
 
@@ -26,7 +27,6 @@ def create_player(request, user_id):
     client.put(player)
     player["id"] = player.key.id
     player["self"] = request.base_url + '/' + str(player.key.id)
-    player["players"] = []
     return player, 201
 
 def view_player_by_id(request, player_id):
@@ -40,6 +40,8 @@ def view_player_by_id(request, player_id):
         return False
     player["id"] = player.key.id
     player["self"] = request.base_url
+    if player["team"] != None:
+        player["team"] = view_trunc_team_by_id(player["team"], request)
     return player
 
 def get_players_by_user_id(user_id, request):
@@ -114,3 +116,12 @@ def delete_player_by_id(player_id):
     '''
     player_key = client.key(constants.players, int(player_id))
     client.delete(player_key)
+
+def player_on_team(player_id):
+    '''
+    Return False if player's "team" property is null
+    Otherwise return True
+    '''
+    player_key = client.key(constants.players, int(player_id))
+    player = client.get(key=player_key)
+    return player["team"]

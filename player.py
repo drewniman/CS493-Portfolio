@@ -14,7 +14,7 @@ bp = Blueprint('player', __name__, url_prefix='/players')
 def handle_auth_error(ex):
     return error.unauthorized
 
-@bp.route('', methods=['POST'])
+@bp.route('', methods=['POST', 'GET'])
 def player_post_view_all():
     payload = verify_jwt(request)
     if isinstance(payload, AuthError):
@@ -28,6 +28,11 @@ def player_post_view_all():
             return error.bad_request
         user_id = get_user_id_by_sub(payload["sub"])
         return create_player(request, user_id)
+    if request.method == 'GET':
+        # View all Players
+        user_id = get_user_id_by_sub(payload["sub"])
+        players = get_players_by_user_id(user_id, request)
+        return players, 200
 
 @bp.route('/<player_id>', methods=['GET'])
 def player_view_put_patch_delete(player_id):

@@ -41,3 +41,33 @@ def view_player_by_id(request, player_id):
     player["id"] = player.key.id
     player["self"] = request.base_url
     return player
+
+def get_players_by_user_id(user_id, request):
+    '''
+    Return a list of players owned by the specified user
+    '''
+    query = client.query(kind=constants.players)
+    query.add_filter("owner", "=", int(user_id))
+    q_limit = int(request.args.get('limit', '5'))
+    q_offset = int(request.args.get('offset', '0'))
+    l_iterator = query.fetch(limit= q_limit, offset=q_offset)
+    pages = l_iterator.pages
+    results = list(next(pages))
+    next_url = None
+    if l_iterator.next_page_token:
+        next_offset = q_offset + q_limit
+        next_url = request.base_url + "?limit=" + str(q_limit) + "&offset=" + str(next_offset)
+    for player in results:
+        player["id"] = player.key.id
+    output = { "players": results }
+    if next_url:
+        output["next"] = next_url
+    # Get collection count
+    players_count_query = client.aggregation_query(query).count()
+    query_result = players_count_query.fetch()
+    counts = []
+    for aggregation_results in query_result:
+        for aggregation in aggregation_results:
+            counts.append(aggregation.value)
+    output["total"] = counts[0]
+    return output

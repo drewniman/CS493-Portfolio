@@ -87,3 +87,23 @@ def patch_player_by_id(player_id, request):
     player["id"] = player.key.id
     player["self"] = request.base_url
     return player
+
+def put_player_by_id(player_id, request):
+    '''
+    Replace all required player props in datastore
+    Return updated player on success
+    '''
+    content = request.get_json()
+    player_key = client.key(constants.players, int(player_id))
+    player = client.get(key=player_key)
+    for prop in required_props:
+        player[prop] = content[prop]
+    for prop in optional_props:
+        if not prop in content:
+            player[prop] = None
+        else:
+            player[prop] = content[prop]
+    client.put(player)
+    player["id"] = player.key.id
+    player["self"] = request.base_url
+    return player

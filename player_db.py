@@ -29,3 +29,15 @@ def create_player(request, user_id):
     player["players"] = []
     return player, 201
 
+def view_player_by_id(request, player_id):
+    '''
+    Return the player object, if it exists
+    Otherwise, return False
+    '''
+    player_key = client.key(constants.players, int(player_id))
+    player = client.get(key=player_key)
+    if not player:
+        return False
+    player["id"] = player.key.id
+    player["self"] = request.base_url
+    return player

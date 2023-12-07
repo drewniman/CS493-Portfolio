@@ -28,8 +28,21 @@ def player_post_view_all():
             return error.bad_request
         user_id = get_user_id_by_sub(payload["sub"])
         return create_player(request, user_id)
-    # if request.method == 'GET':
-    #     # View all Teams
-    #     user_id = get_user_id_by_sub(payload["sub"])
-    #     teams = get_teams_by_user_id(user_id, request)
-    #     return teams, 200
+
+@bp.route('/<player_id>', methods=['GET'])
+def player_view_put_patch_delete(player_id):
+    payload = verify_jwt(request)
+    if isinstance(payload, AuthError):
+        return error.unauthorized
+    elif not validate.accept_header(request):
+        return error.accept_header
+    player = view_player_by_id(request, player_id)
+    user_id = get_user_id_by_sub(payload["sub"])
+    if not player:
+        return error.player_not_found
+    if user_id != player["owner"]:
+        return error.forbidden
+    
+    if request.method == 'GET':
+        # View a Player
+        return player, 200

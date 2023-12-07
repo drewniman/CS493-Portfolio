@@ -179,3 +179,12 @@ def assign_player_to_team(team_id, player_id):
     player = client.get(key=player_key)
     player["team"] = int(team_id)
     client.put(player)
+
+def remove_player_from_team(player_id):
+    '''
+    Set the specified player's "team" field to null
+    '''
+    player_key = client.key(constants.players, int(player_id))
+    player = client.get(key=player_key)
+    player["team"] = None
+    client.put(player)

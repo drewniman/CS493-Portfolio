@@ -85,3 +85,9 @@ def team_player(team_id, player_id):
             return error.player_on_team
         assign_player_to_team(team_id, player_id)
         return '', 204
+    if request.method == 'DELETE':
+        # Remove Player from Team
+        if player["team"]["id"] != int(team_id):
+            return error.player_not_on_team
+        remove_player_from_team(player_id)
+        return '', 204

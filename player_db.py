@@ -61,6 +61,7 @@ def get_players_by_user_id(user_id, request):
         next_url = request.base_url + "?limit=" + str(q_limit) + "&offset=" + str(next_offset)
     for player in results:
         player["id"] = player.key.id
+        player["self"] = request.base_url + "/" + str(player.key.id)
     output = { "players": results }
     if next_url:
         output["next"] = next_url

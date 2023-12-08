@@ -103,6 +103,7 @@ def get_teams_by_user_id(user_id, request):
     for team in results:
         team["id"] = team.key.id
         team["players"] = get_players_on_team(team.key.id, request)
+        team["self"] = request.base_url + "/" + str(team.key.id)
     output = { "teams": results }
     if next_url:
         output["next"] = next_url

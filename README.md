@@ -17,3 +17,4 @@ This project functions as the backend to power a fantasy basketball application.
 2. Click "Login"
 3. Sign up with email or Google account
 4. This will return a JWT and user ID, the JWT can be used to make requests to the API as specified in the api_documentation pdf
+5. Postman testing suite exports available under /postman_tests

@@ -1,0 +1,5829 @@
+{
+	"info": {
+		"_postman_id": "502b0ffe-5d4d-4102-acc0-8409be5859f9",
+		"name": "CS493-Portfolio",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29892588"
+	},
+	"item": [
+		{
+			"name": "add team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.1_id environment variable from response",
+							"pm.environment.set(\"team1.1_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Chauncey Billups\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(1);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Trail Blazers\",\n    \"location\": \"Portland\",\n    \"coach\": \"Chauncey Billups\",\n    \"mascot\": \"Blaze the Trail Cat\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team missing attributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    //Check for 400 status code",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request object is missing at least one of the required attributes\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Trail Blazers\",\n    \"coach\": \"Chauncey Billups\",\n    \"mascot\": \"Blaze the Trail Cat\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Trail Blazers\",\n    \"location\": \"Portland\",\n    \"coach\": \"Chauncey Billups\",\n    \"mascot\": \"Blaze the Trail Cat\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Trail Blazers\",\n    \"location\": \"Portland\",\n    \"coach\": \"Chauncey Billups\",\n    \"mascot\": \"Blaze the Trail Cat\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Chauncey Billups\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(1);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No team with this team_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{invalid_team_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{invalid_team_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team1.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.2_id environment variable from response",
+							"pm.environment.set(\"team1.2_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Warriors\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Golden State\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Steve Kerr\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(7);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Warriors\",\n    \"location\": \"Golden State\",\n    \"coach\": \"Steve Kerr\",\n    \"championships\": 7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team1.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.3_id environment variable from response",
+							"pm.environment.set(\"team1.3_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Bucks\",\n    \"location\": \"Milwaukee\",\n    \"coach\": \"Adrian Griffin\",\n    \"mascot\": \"Bango\",\n    \"championships\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team1.4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.4_id environment variable from response",
+							"pm.environment.set(\"team1.4_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"//    pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"//    pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"//    pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"//    pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"//    pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Nuggets\",\n    \"location\": \"Denver\",\n    \"coach\": \"Mike Malone\",\n    \"mascot\": \"Rocky the Mountain Lion\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team1.5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.5_id environment variable from response",
+							"pm.environment.set(\"team1.5_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"//    pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"//    pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"//    pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"//    pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"//    pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Thunder\",\n    \"location\": \"Oklahoma City\",\n    \"coach\": \"Mark Daigneault\",\n    \"mascot\": \"Rumble the Bison\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team1.6",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team1.6_id environment variable from response",
+							"pm.environment.set(\"team1.6_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"//    pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"//    pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"//    pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"//    pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"//    pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Mavericks\",\n    \"location\": \"Dallas\",\n    \"coach\": \"Jason Kidd\",\n    \"mascot\": \"Champ\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team2.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team2.1_id environment variable from response",
+							"pm.environment.set(\"team2.1_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Pelicans\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"New Orleans\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Willie Green\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Pierre the Pelican\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Pelicans\",\n    \"location\": \"New Orleans\",\n    \"coach\": \"Willie Green\",\n    \"mascot\": \"Pierre the Pelican\",\n    \"championships\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team2.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team2.2_id environment variable from response",
+							"pm.environment.set(\"team2.2_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"//    pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"//    pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"//    pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"//    pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"//    pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Timberwolves\",\n    \"location\": \"Minnesota\",\n    \"coach\": \"Chris Finch\",\n    \"mascot\": \"Crunch the Wolf\",\n    \"championships\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add team2.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set team2.3_id environment variable from response",
+							"pm.environment.set(\"team2.3_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bucks\");",
+							"//    pm.expect(pm.response.json()[\"location\"]).to.eq(\"Milwaukee\");",
+							"//    pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Adrian Griffin\");",
+							"//    pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Bango\");",
+							"//    pm.expect(pm.response.json()[\"championships\"]).to.eq(2);",
+							"//    pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Heat\",\n    \"location\": \"Miami\",\n    \"coach\": \"Erik Spoelstra\",\n    \"mascot\": \"Burnie\",\n    \"championships\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"teams\"].length).to.equal(5);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(6);",
+							"    //Check if the next url is correct",
+							"   const next_url = pm.environment.get(\"app_url\") + \"/teams?limit=5&offset=5\";",
+							"   pm.expect(pm.response.json()[\"next\"]).to.eq(next_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Terry Stotts\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(20);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"coach\": \"Terry Stotts\",\n    \"championships\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch team1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"coach\": \"Terry Stotts\",\n    \"championships\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch team2.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"coach\": \"Terry Stotts\",\n    \"championships\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch team not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No team with this team_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"coach\": \"Terry Stotts\",\n    \"championships\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{invalid_team_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{invalid_team_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch team1.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"coach\": \"Terry Stotts\",\n    \"championships\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team1.5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Supersonics\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Seattle\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Nate McMillan\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Squatch\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(1);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"location\": \"Seattle\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.5_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.5_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team1.1 missing attributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    //Check for 400 status code",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request object is missing at least one of the required attributes\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"location\": \"Seattle\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team2.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"location\": \"Seattle\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No team with this team_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"location\": \"Seattle\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{invalid_team_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{invalid_team_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put team1.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Supersonics\",\n    \"location\": \"Seattle\",\n    \"coach\": \"Nate McMillan\",\n    \"mascot\": \"Squatch\",\n    \"championships\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player1.1_id environment variable from response",
+							"pm.environment.set(\"player1.1_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Damian Lillard\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(74);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(25.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(6.7);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.3);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(1.0);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(3.1);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Damian Lillard\",\n    \"height\": 74,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 25.2,\n    \"REB\": 4.2,\n    \"AST\": 6.7,\n    \"BLK\": 0.3,\n    \"STL\": 1.0,\n    \"3PM\": 3.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player missing attributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    //Check for 400 status code",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request object is missing at least one of the required attributes\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Damian Lillard\",\n    \"height\": 74,\n    \"number\": 0,\n    \"PTS\": 25.2,\n    \"REB\": 4.2,\n    \"AST\": 6.7,\n    \"BLK\": 0.3,\n    \"STL\": 1.0,\n    \"3PM\": 3.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Damian Lillard\",\n    \"height\": 74,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 25.2,\n    \"REB\": 4.2,\n    \"AST\": 6.7,\n    \"BLK\": 0.3,\n    \"STL\": 1.0,\n    \"3PM\": 3.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Damian Lillard\",\n    \"height\": 74,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 25.2,\n    \"REB\": 4.2,\n    \"AST\": 6.7,\n    \"BLK\": 0.3,\n    \"STL\": 1.0,\n    \"3PM\": 3.1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Damian Lillard\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(74);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(25.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(6.7);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.3);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(1.0);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(3.1);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No player with this player_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{invalid_player_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{invalid_player_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player1.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player1.2_id environment variable from response",
+							"pm.environment.set(\"player1.2_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Damian Lillard\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(74);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(25.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(4.2);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(6.7);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.3);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.0);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(3.1);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Stephen Curry\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 30,\n    \"PTS\": 24.7,\n    \"REB\": 4.7,\n    \"AST\": 6.5,\n    \"BLK\": 0.2,\n    \"STL\": 1.6,\n    \"3PM\": 3.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player1.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player1.3_id environment variable from response",
+							"pm.environment.set(\"player1.3_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Damian Lillard\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(74);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(25.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(4.2);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(6.7);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.3);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.0);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(3.1);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Nikola Jokic\",\n    \"height\": 83,\n    \"position\": \"C\",\n    \"number\": 15,\n    \"PTS\": 20.5,\n    \"REB\": 10.6,\n    \"AST\": 6.7,\n    \"BLK\": 0.7,\n    \"STL\": 1.2,\n    \"3PM\": 1.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.1_id environment variable from response",
+							"pm.environment.set(\"player2.1_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"LeBron James\",\n    \"height\": 81,\n    \"position\": \"SF\",\n    \"number\": 23,\n    \"PTS\": 27.2,\n    \"REB\": 7.5,\n    \"AST\": 7.3,\n    \"BLK\": 0.8,\n    \"STL\": 1.5,\n    \"3PM\": 1.6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.2_id environment variable from response",
+							"pm.environment.set(\"player2.2_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Giannis Antetokounmpo\",\n    \"height\": 83,\n    \"position\": \"PF\",\n    \"number\": 34,\n    \"PTS\": 22.8,\n    \"REB\": 9.6,\n    \"AST\": 4.7,\n    \"BLK\": 1.3,\n    \"STL\": 1.1,\n    \"3PM\": 0.7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.3_id environment variable from response",
+							"pm.environment.set(\"player2.3_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Kevin Durant\",\n    \"height\": 83,\n    \"position\": \"PF\",\n    \"number\": 35,\n    \"PTS\": 27.3,\n    \"REB\": 7.0,\n    \"AST\": 4.4,\n    \"BLK\": 1.1,\n    \"STL\": 1.1,\n    \"3PM\": 1.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.4_id environment variable from response",
+							"pm.environment.set(\"player2.4_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Luka Doncic\",\n    \"height\": 79,\n    \"position\": \"PG\",\n    \"number\": 77,\n    \"PTS\": 27.8,\n    \"REB\": 8.6,\n    \"AST\": 8.0,\n    \"BLK\": 0.4,\n    \"STL\": 1.1,\n    \"3PM\": 2.8\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.5_id environment variable from response",
+							"pm.environment.set(\"player2.5_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Anthony Edwards\",\n    \"height\": 76,\n    \"position\": \"SG\",\n    \"number\": 5,\n    \"PTS\": 22.2,\n    \"REB\": 5.2,\n    \"AST\": 3.8,\n    \"BLK\": 0.6,\n    \"STL\": 1.4,\n    \"3PM\": 2.7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add player2.6",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set player2.6_id environment variable from response",
+							"pm.environment.set(\"player2.6_id\", pm.response.json()[\"id\"]);",
+							"",
+							"pm.test(\"201 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// pm.test(\"content is valid\", function () {",
+							"//    //Check if the response content is valid and matches the expected values",
+							"//    pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"//    pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"//    pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"//    pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"//    pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"//    pm.expect(pm.response.json()[\"number\"]).to.eq(23);",
+							"//    pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"//    pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"//    pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"//    pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"//    pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"//    pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"//    //Check if the self url is correct",
+							"//    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"//    pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"// });",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Jayson Tatum\",\n    \"height\": 80,\n    \"position\": \"SF\",\n    \"number\": 0,\n    \"PTS\": 22.7,\n    \"REB\": 7.1,\n    \"AST\": 3.3,\n    \"BLK\": 0.7,\n    \"STL\": 1.1,\n    \"3PM\": 2.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"players\"].length).to.equal(5);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(6);",
+							"    //Check if the next url is correct",
+							"   const next_url = pm.environment.get(\"app_url\") + \"/players?limit=5&offset=5\";",
+							"   pm.expect(pm.response.json()[\"next\"]).to.eq(next_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch player2.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user2_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"LeBron James\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(81);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"SF\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(6);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(27.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(7.5);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(7.3);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.8);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(1.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(1.6);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"number\": 6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch player2.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"number\": 6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch player2.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"number\": 6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch player not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No player with this player_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"number\": 6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{invalid_player_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{invalid_player_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch player2.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"number\": 6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Scoot Henderson\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(75);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(9.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(2.7);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.1);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(0.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(0.9);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player1.1 missing attributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    //Check for 400 status code",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request object is missing at least one of the required attributes\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player1.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No player with this player_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{invalid_player_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{invalid_player_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put player1.1 not acceptable",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"406 status code\", function () {",
+							"    //Check for 406 status code",
+							"    pm.response.to.have.status(406);",
+							"});",
+							"",
+							"pm.test(\"406 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The Accept header MIME type is not supported by this endpoint\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Scoot Henderson\",\n    \"height\": 75,\n    \"position\": \"PG\",\n    \"number\": 0,\n    \"PTS\": 9.2,\n    \"REB\": 2.7,\n    \"AST\": 4.2,\n    \"BLK\": 0.1,\n    \"STL\": 0.5,\n    \"3PM\": 0.9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 before assign player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Terry Stotts\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(20);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 before assigned team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Scoot Henderson\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(75);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(9.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(2.7);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.1);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(0.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(0.9);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player1.1 to team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 after assign player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content besides players is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Terry Stotts\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(20);",
+							"   pm.expect(pm.response.json()[\"players\"].length).to.eq(1);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							"",
+							"pm.test(\"players content is valid\", function () {",
+							"   //Check if player content is valid",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"players\"][0][\"id\"];",
+							"   pm.expect(pm.response.json()[\"players\"][0][\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 after assigned team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content besides team is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.not.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Scoot Henderson\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(75);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(9.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(2.7);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.1);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(0.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(0.9);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});",
+							"",
+							"pm.test(\"team content is valid\", function () {",
+							"    //Check for appropriate content for team including self attribute",
+							"    const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"team\"][\"id\"];",
+							"    pm.expect(pm.response.json()[\"team\"][\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player1.1 to team 1.2 already assigned",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {",
+							"    //Check for 400 status code",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The player is already on a team\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.2_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.2_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player1.2 to team1.1 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player1.2 to team1.1 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player to team1.1 not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The specified team and/or player does not exist\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}/players/{{invalid_player_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}",
+						"players",
+						"{{invalid_player_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign player1.2 to team not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The specified team and/or player does not exist\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{invalid_team_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{invalid_team_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"teams\"].length).to.equal(5);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(6);",
+							"    //Check if the next url is correct",
+							"   const next_url = pm.environment.get(\"app_url\") + \"/teams?limit=5&offset=5\";",
+							"   pm.expect(pm.response.json()[\"next\"]).to.eq(next_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"teams\"].length).to.equal(3);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(3);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"players\"].length).to.equal(3);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(3);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"players\"].length).to.equal(5);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(6);",
+							"    //Check if the next url is correct",
+							"   const next_url = pm.environment.get(\"app_url\") + \"/players?limit=5&offset=5\";",
+							"   pm.expect(pm.response.json()[\"next\"]).to.eq(next_url);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "remove player1.1 from team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}",
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view team1.1 after remove player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Trail Blazers\");",
+							"   pm.expect(pm.response.json()[\"location\"]).to.eq(\"Portland\");",
+							"   pm.expect(pm.response.json()[\"coach\"]).to.eq(\"Terry Stotts\");",
+							"   pm.expect(pm.response.json()[\"mascot\"]).to.eq(\"Blaze the Trail Cat\");",
+							"   pm.expect(pm.response.json()[\"championships\"]).to.eq(20);",
+							"   pm.expect(pm.response.json()[\"players\"]).to.deep.equal([]);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/teams/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view player1.1 after removed from team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"   //Check if the response content is valid and matches the expected values",
+							"   pm.expect(\"\" + pm.response.json()[\"owner\"]).to.eq(pm.environment.get(\"user1_id\"));",
+							"   pm.expect(pm.response.json()[\"team\"]).to.eq(null);",
+							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Scoot Henderson\");",
+							"   pm.expect(pm.response.json()[\"height\"]).to.eq(75);",
+							"   pm.expect(pm.response.json()[\"position\"]).to.eq(\"PG\");",
+							"   pm.expect(pm.response.json()[\"number\"]).to.eq(0);",
+							"   pm.expect(pm.response.json()[\"PTS\"]).to.eq(9.2);",
+							"   pm.expect(pm.response.json()[\"REB\"]).to.eq(2.7);",
+							"   pm.expect(pm.response.json()[\"AST\"]).to.eq(4.2);",
+							"   pm.expect(pm.response.json()[\"BLK\"]).to.eq(0.1);",
+							"   pm.expect(pm.response.json()[\"STL\"]).to.eq(0.5);",
+							"   pm.expect(pm.response.json()[\"3PM\"]).to.eq(0.9);",
+							"   //Check if the self url is correct",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/players/\" + pm.response.json()[\"id\"];",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.2 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.2 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No team with this team_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{invalid_team_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{invalid_team_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.3_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.3_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.4_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.4_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.5_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.5_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team1.6",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team1.6_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team1.6_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team2.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team2.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team2.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team2.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete team2.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams/{{team2.3_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams",
+						"{{team2.3_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player1.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player1.2 unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"401 status code\", function () {",
+							"    //Check for 401 status code",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test(\"401 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Invalid/missing credentials\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player1.2 forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 403 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The user is not authorized to access this resource\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"404 status code\", function () {",
+							"    //Check for 404 status code",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"404 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No player with this player_id exists\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{invalid_player_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{invalid_player_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player1.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player1.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player1.3_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player1.3_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.1_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.2_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.3_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.3_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.4_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.4_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.5",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.5_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.5_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete player2.6",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 status code\", function () {",
+							"    //Check for 204 status code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players/{{player2.6_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players",
+						"{{player2.6_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"teams\"].length).to.equal(0);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all teams user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"teams\"].length).to.equal(0);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/teams",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"players\"].length).to.equal(0);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view all players user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"200 status code\", function () {",
+							"    //Check for 200 status code",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"content is valid\", function () {",
+							"    //Check for correct number of loads",
+							"    pm.expect(pm.response.json()[\"players\"].length).to.equal(0);",
+							"    pm.expect(pm.response.json()[\"total\"]).to.eq(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/players",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"players"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -14,7 +14,7 @@ import user
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
-    load_dotenv(ENV_FILE)
+    load_dotenv(ENV_FILE, override=True)
 
 app = Flask(__name__)
 app.register_blueprint(team.bp)
